@@ -3,6 +3,16 @@ import org.junit.Test
 
 class ChatServiceTest {
 
+    @Test
+    fun getFromIndexMessages_getMessages() {
+        ChatService.clearEverything()
+        ChatService.newMessage(133769, 100,"test")
+        val result = ChatService.getFromIndexMessages(100,0,1)
+        //because date is random we will bend around it
+        assertEquals(result[0].messageText,"test")
+        assertEquals(result[0].senderId,133769)
+        assertEquals(result[0].read,true)
+    }
 
     @Test (expected = ChatService.ChatNotFoundException::class)
     fun getFromIndexMessages_noChatFound() {
@@ -14,6 +24,11 @@ class ChatServiceTest {
 
     @Test
     fun getUnreadChatsCount() {
+        ChatService.clearEverything()
+        ChatService.newMessage(133769, 100,"test")
+        ChatService.newMessage(133769, 200,"test2")
+        val result = ChatService.getUnreadChatsCount()
+        assertEquals(result,2)
     }
 
     @Test
@@ -24,11 +39,12 @@ class ChatServiceTest {
         assertTrue(result)
     }
 
-    @Test (expected = IndexOutOfBoundsException::class)
+    @Test
     fun editMessage_messageNotFound(){
         ChatService.clearEverything()
         ChatService.newMessage(133769, 100,"test")
-        ChatService.editMessage(100,2,"test2")
+        val result = ChatService.editMessage(100,2,"test2")
+        assertFalse(result)
     }
 
     @Test
@@ -48,11 +64,12 @@ class ChatServiceTest {
         ChatService.deleteChat(100)
     }
 
-    @Test (expected = IndexOutOfBoundsException::class)
+    @Test
     fun deleteMessage_noMessage() {
         ChatService.clearEverything()
         ChatService.newMessage(133769, 100,"test")
-        ChatService.deleteMessage(100,2)
+        val result = ChatService.deleteMessage(100,2)
+        assertFalse(result)
     }
 
     @Test (expected = ChatService.ChatNotFoundException::class)

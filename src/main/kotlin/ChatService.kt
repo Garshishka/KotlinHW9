@@ -26,8 +26,9 @@ object ChatService {
     fun deleteMessage(userId: Int, messageIndex: Int): Boolean {
         try {
             chatList[userId]?.messageList?.removeAt(messageIndex) ?: throw ChatNotFoundException("no chat with $userId")
-        } catch (e: MessageNotFoundException) {
+        } catch (e: IndexOutOfBoundsException) {
             println("no message with index $messageIndex")
+            return false
         }
         //if this was the last message in chat the chat gets deleted
         if (chatList[userId]?.messageList?.isEmpty() == true) {
@@ -39,8 +40,9 @@ object ChatService {
     fun editMessage(userId: Int, messageIndex: Int, newMesage: String): Boolean {
         try {
             chatList[userId]?.messageList?.get(messageIndex)?.messageText = newMesage
-        } catch (e: MessageNotFoundException) {
+        } catch (e: IndexOutOfBoundsException) {
             println("no message with index $messageIndex")
+            return false
         }
         return true
     }
@@ -55,5 +57,4 @@ object ChatService {
     }
 
     class ChatNotFoundException(message: String) : RuntimeException(message)
-    class MessageNotFoundException(message: String) : RuntimeException(message)
 }
