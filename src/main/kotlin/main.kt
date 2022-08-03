@@ -23,4 +23,14 @@ fun main() {
     println("Showing all messages from first chat")
     println( ChatService.getFromIndexMessages(chatPerson2Id,0,3))
     println("unread chats: "+ChatService.getUnreadChatsCount())
+
+    println("deleting second message from first chat:")
+    ChatService.deleteMessage(chatPerson1Id,1)
+    println( ChatService.getChats())
+    println("deleting all messages from first chat:")
+    ChatService.deleteMessage(chatPerson1Id,0)
+    println( ChatService.getChats())
+    println("editing last message in second chat:")
+    ChatService.editMessage(chatPerson2Id,2,"I edited this message")
+    println( ChatService.getChats())
 }

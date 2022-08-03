@@ -36,9 +36,22 @@ object ChatService {
         return true
     }
 
-    fun deleteChat(userId: Int): Boolean {
-        chatList.remove(userId)
+    fun editMessage(userId: Int, messageIndex: Int, newMesage: String): Boolean {
+        try {
+            chatList[userId]?.messageList?.get(messageIndex)?.messageText = newMesage
+        } catch (e: MessageNotFoundException) {
+            println("no message with index $messageIndex")
+        }
         return true
+    }
+
+    fun deleteChat(userId: Int): Boolean {
+        chatList.remove(userId) ?: throw ChatNotFoundException("no chat with $userId")
+        return true
+    }
+
+    fun clearEverything(){ //FOR TESTING PURPOSES
+        chatList.clear()
     }
 
     class ChatNotFoundException(message: String) : RuntimeException(message)

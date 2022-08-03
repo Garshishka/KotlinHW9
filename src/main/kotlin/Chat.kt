@@ -14,7 +14,7 @@ data class Chat(
 }
 
 data class Message(
-    val messageText: String,
+    var messageText: String,
     val senderId: Int,
 
     val date: Int = Random.nextInt(1000,9999), //just for the purposes of this homework
