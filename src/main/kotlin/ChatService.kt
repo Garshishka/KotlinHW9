@@ -6,12 +6,17 @@ object ChatService {
     fun newMessage(senderId: Int, receiverId: Int, messageText: String) {
         val userId =
             if (senderId == ownerId) receiverId else senderId //we find who of the receiver-sender pair is not the user of this system
-        chatList.getOrPut(userId) { Chat(userId/*, "chat with $userId") */)}.messageList += Message(messageText, senderId)
+        chatList.getOrPut(userId) { Chat(userId) }.messageList += Message(messageText, senderId)
     }
 
     fun getFromIndexMessages(userId: Int, fromIndex: Int, amountOfMessages: Int): List<Message> {
         val chat = chatList[userId] ?: throw ChatNotFoundException("no chat with $userId")
-        return chat.messageList.subList(fromIndex, fromIndex + amountOfMessages).onEach { it.read = true }
+        return chat.messageList.asSequence()
+            .filterIndexed { index, it -> index >= fromIndex }
+            .take(amountOfMessages)
+            .onEach { it.read = true }
+            .toList()
+            .ifEmpty { listOf(Message("No messages in this chat", -1, read = true, date = 0)) }
     }
 
     fun getChats(): List<Chat> {
@@ -19,8 +24,9 @@ object ChatService {
     }
 
     fun getUnreadChatsCount(): Int {
-        val c: MutableList<Chat> = chatList.values.toMutableList()
-        return c.count{it.messageList.any { !it.read }}
+        return  chatList.values.asSequence()
+            .filter{ it.messageList.any{ !it.read} }
+            .count()
     }
 
     fun deleteMessage(userId: Int, messageIndex: Int): Boolean {
@@ -52,7 +58,7 @@ object ChatService {
         return true
     }
 
-    fun clearEverything(){ //FOR TESTING PURPOSES
+    fun clearEverything() { //FOR TESTING PURPOSES
         chatList.clear()
     }
 
