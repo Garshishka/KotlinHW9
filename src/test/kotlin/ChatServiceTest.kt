@@ -14,6 +14,15 @@ class ChatServiceTest {
         assertEquals(result[0].read,true)
     }
 
+    @Test
+    fun getFromIndexMessages_empty() {
+        ChatService.clearEverything()
+        ChatService.newMessage(133769, 100,"test")
+        ChatService.chatList[100]!!.messageList.clear()
+        val result = ChatService.getFromIndexMessages(100,0,1)
+        assertEquals(result.toString(),"[|-1| at 0: 'No messages in this chat' ]")
+    }
+
     @Test (expected = ChatService.ChatNotFoundException::class)
     fun getFromIndexMessages_noChatFound() {
         ChatService.clearEverything()
@@ -90,5 +99,16 @@ class ChatServiceTest {
     fun deleteChat_noChat() {
         ChatService.clearEverything()
         ChatService.deleteChat(1)
+    }
+
+    @Test
+    fun getChats_working(){
+        ChatService.newMessage(133769, 100,"test")
+        ChatService.newMessage(100, 133769,"test2")
+        ChatService.newMessage(133769, 200,"test3")
+        val result = ChatService.getChats()
+        assertEquals(result.toString(),
+            "[(chat with |100|: |100| at ${result[0].messageList.last().date}: 'test2'  - unread)," +
+                    " (chat with |200|: |133769| at ${result[1].messageList.last().date}: 'test3'  - unread)]")
     }
 }
